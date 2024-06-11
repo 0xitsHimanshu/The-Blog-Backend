@@ -63,7 +63,17 @@ export const signup = async (req, res) => {
 // #function to signin
 export const signin = async (req, res) => {
     try{
-        const { name, email, password} = req.body;
+        const { email, password} = req.body;
+
+        const user = await User.findOne({"personal_info.email": email});
+
+        if(!user) return res.status(403).json({error: "Invalid email"});
+
+        const isMatch = await bcrypt.compare(password, user.personal_info.password);
+        if(!isMatch) return res.status(404).json({error: "Invalid password"})
+
+        return res.status(200).json(sendCookie(user));
+
     } catch (err) {
         console.error(err);
         res.status(500).send("Internal Server Error");
