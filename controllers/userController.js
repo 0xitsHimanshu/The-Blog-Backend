@@ -79,3 +79,16 @@ export const signin = async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 };
+
+// #function to googleAuth
+
+export const googleAuth = async (req, res) => {
+  try {
+    let {accessToken} = req.body;
+    
+
+
+  } catch (err) {
+    console.log(err);
+  }
+};
