@@ -102,7 +102,23 @@ export const googleAuth = async (req, res) => {
         .catch((err) => {
           return res.status(500).json({error: err.message});
         });
-      
+
+        if(user){
+          if(!user.google_auth){
+            return res.status(403).json({error: "User with this email already exists. Please signin using email and password"});
+          }
+        } else {
+          user = await User.create({
+            personal_info: {
+              fullname: name,
+              email,
+              username: await generateUsername(email),
+            },
+            google_auth: true
+          });
+        }
+
+        return res.status(200).json(sendCookie(user));
      })
 
   } catch (err) {
