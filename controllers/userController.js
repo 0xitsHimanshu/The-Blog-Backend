@@ -2,6 +2,7 @@ import { User } from "../Schema/User.js";
 import bcrypt from "bcrypt";
 import { generateUsername } from "../utils/helper.js";
 import { sendCookie } from "../utils/sendCookie.js";
+import { getAuth } from "firebase-admin/auth";
 
 // regex for email and password
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
@@ -85,8 +86,24 @@ export const signin = async (req, res) => {
 export const googleAuth = async (req, res) => {
   try {
     let {accessToken} = req.body;
-    
 
+    getAuth()
+     .verifyIdToken(accessToken)
+     .then(async (decodedUser) => {
+
+        let {email, name, picture} = decodedUser;
+        
+        picture = picture.replace("s96-c", "s384-c");
+
+        let user = await User.findOne({"personal_info.email": email}).select("persnal_info.fullname personal_info.username personal_info.profile_img google_auth")
+        .then((u)=>{
+          return u || null;
+        })
+        .catch((err) => {
+          return res.status(500).json({error: err.message});
+        });
+      
+     })
 
   } catch (err) {
     console.log(err);
