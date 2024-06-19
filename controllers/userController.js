@@ -70,6 +70,10 @@ export const signin = async (req, res) => {
 
         if(!user) return res.status(403).json({error: "Invalid email"});
 
+        if (!user.password) {
+          return res.status(400).json({ error: "User does not have a password. Please use Google authentication." });
+        }
+
         const isMatch = await bcrypt.compare(password, user.personal_info.password);
         if(!isMatch) return res.status(404).json({error: "Invalid password"})
 
@@ -85,43 +89,35 @@ export const signin = async (req, res) => {
 
 export const googleAuth = async (req, res) => {
   try {
-    let {accessToken} = req.body;
+    const { accessToken } = req.body;
 
-    getAuth()
-     .verifyIdToken(accessToken)
-     .then(async (decodedUser) => {
+    const decodedUser = await getAuth().verifyIdToken(accessToken);
+    const { email, name, picture } = decodedUser;
 
-        let {email, name, picture} = decodedUser;
-        
-        picture = picture.replace("s96-c", "s384-c");
+    const user = await User.findOne({ "personal_info.email": email }).select("personal_info.fullname personal_info.username personal_info.profile_img google_auth password");
 
-        let user = await User.findOne({"personal_info.email": email}).select("persnal_info.fullname personal_info.username personal_info.profile_img google_auth")
-        .then((u)=>{
-          return u || null;
-        })
-        .catch((err) => {
-          return res.status(500).json({error: err.message});
-        });
+    if (user) {
+      if (!user.google_auth) {
+        return res.status(403).json({ error: "User with this email already exists. Please signin using email and password" });
+      }
+    } else {
+      const updatedPicture = picture.replace("s96-c", "s384-c");
+      const username = await generateUsername(email);
+      
+      user = await User.create({
+        personal_info: {
+          fullname: name,
+          email,
+          username,
+          profile_img: updatedPicture,
+        },
+        google_auth: true
+      });
+    }
 
-        if(user){
-          if(!user.google_auth){
-            return res.status(403).json({error: "User with this email already exists. Please signin using email and password"});
-          }
-        } else {
-          user = await User.create({
-            personal_info: {
-              fullname: name,
-              email,
-              username: await generateUsername(email),
-            },
-            google_auth: true
-          });
-        }
-
-        return res.status(200).json(sendCookie(user));
-     })
-
+    return res.status(200).json(sendCookie(user));
   } catch (err) {
-    console.log(err);
+    console.error(err);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
