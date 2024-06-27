@@ -1,9 +1,10 @@
 import express from "express";
 import userRouter from "./routes/userRouter.js";
+import awsRouter from "./routes/awsRouter.js"
 import dotenv from "dotenv";
 import cors from "cors";
 import admin from "firebase-admin";
-import serviceAccountKey from "./the-blog-react-js-firebase-adminsdk-o33j8-9996435ee8.json" assert { type: "json" };  
+import serviceAccountKey from "./the-blog-react-js-firebase-adminsdk-o33j8-9996435ee8.json" assert { type: "json" };
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ admin.initializeApp({
 
 //routes
 app.use("/api/users", userRouter);
+app.use("/api/aws", awsRouter);
 
 app.get("/", (req, res) => {
   res.send("Hello, World!");

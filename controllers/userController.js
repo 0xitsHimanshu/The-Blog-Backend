@@ -70,9 +70,9 @@ export const signin = async (req, res) => {
 
         if(!user) return res.status(403).json({error: "Invalid email"});
 
-        if (!user.password) {
-          return res.status(400).json({ error: "User does not have a password. Please use Google authentication." });
-        }
+        // if (!user.password) {
+        //   return res.status(400).json({ error: "User does not have a password. Please use Google authentication." });
+        // }
 
         const isMatch = await bcrypt.compare(password, user.personal_info.password);
         if(!isMatch) return res.status(404).json({error: "Invalid password"})
