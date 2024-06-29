@@ -6,7 +6,7 @@ export const getUploadURL = async (req, res) => {
         return res.status(200). json({"uploadUrl": url});
      })
      .catch((err)=> {
-        console.log(err);
+        console.log(err.message);
         return res.status(500).json({error: "Internal Server Error"});
      })
 };
