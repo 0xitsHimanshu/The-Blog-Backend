@@ -13,7 +13,7 @@ export const generateURL = async () => {
     const imageName = `${nanoid()}-${date.getTime()}.jpeg`;
 
     const params = {
-        Bucket: "bucketfortheblog ",
+        Bucket: "bucketfortheblog",
         Key: imageName,
         Expires: 1000, // Ensure this is a number, not a string
         ContentType: "image/jpeg",
