@@ -1,6 +1,7 @@
 import express from "express";
 import userRouter from "./routes/userRouter.js";
 import awsRouter from "./routes/awsRouter.js"
+import blogRouter from "./routes/blogRouter.js"
 import dotenv from "dotenv";
 import cors from "cors";
 import admin from "firebase-admin";
@@ -23,6 +24,7 @@ admin.initializeApp({
 //routes
 app.use("/api/users", userRouter);
 app.use("/api/aws", awsRouter);
+app.use("/api/blog", blogRouter)
 
 app.get("/", (req, res) => {
   res.send("Hello, World!");
