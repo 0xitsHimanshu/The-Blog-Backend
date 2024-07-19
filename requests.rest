@@ -1,6 +1,6 @@
-# "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2N2Q4NjBlMGQzYWMxMDliOTQzMTc0NiIsImlhdCI6MTcyMTM3MzU2MX0.Cd9EA8H8hpWwjmLaBHub9rWVSW9YulKSfHM5rkh-JH0",
+# "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2N2Q4NjBlMGQzYWMxMDliOTQzMTc0NiIsImlhdCI6MTcyMTM4ODg2NX0.EW1k1tpQd4Z-Z_8Qln-n1K_KAO_rXRenReZ-__4w6AU",
 
-# .POST http://localhost:6969/api/users/signin
+# POST http://localhost:6969/api/users/signin
 # Content-Type: application/json
 
 # {
@@ -10,8 +10,14 @@
 
 POST http://localhost:6969/api/blog/create-blog
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2N2Q4NjBlMGQzYWMxMDliOTQzMTc0NiIsImlhdCI6MTcyMTM3MzU2MX0.Cd9EA8H8hpWwjmLaBHub9rWVSW9YulKSfHM5rkh-JH0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2N2Q4NjBlMGQzYWMxMDliOTQzMTc0NiIsImlhdCI6MTcyMTM4ODg2NX0.EW1k1tpQd4Z-Z_8Qln-n1K_KAO_rXRenReZ-__4w6AU
 
 {
-    "title": "My first blog"
+    "title": "My first blog",
+    "banner": "https://www.example.com/image-url",
+    "des": "This is my first blog",
+    "content": {
+        "blocks": [1,2]
+    },
+    "tags": ["tag1", "tag2"]
 }
