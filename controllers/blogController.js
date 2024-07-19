@@ -1,5 +1,8 @@
 
 export const createBlog = (req, res) => {
 
-    return res.json(req.body);
+   let authorID = req.user;
+   let { } = req.body;
+
+   
 };

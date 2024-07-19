@@ -1,7 +1,17 @@
-POST http://localhost:3000/signin 
+# "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2N2Q4NjBlMGQzYWMxMDliOTQzMTc0NiIsImlhdCI6MTcyMTM3MzU2MX0.Cd9EA8H8hpWwjmLaBHub9rWVSW9YulKSfHM5rkh-JH0",
+
+# .POST http://localhost:6969/api/users/signin
+# Content-Type: application/json
+
+# {
+#    "email":"miketheross69@gmail.com",
+#    "password":"Mikeross@123"
+# }
+
+POST http://localhost:6969/api/blog/create-blog
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2N2Q4NjBlMGQzYWMxMDliOTQzMTc0NiIsImlhdCI6MTcyMTM3MzU2MX0.Cd9EA8H8hpWwjmLaBHub9rWVSW9YulKSfHM5rkh-JH0
 
 {
-    "email": "kunaa@gmail.com",
-    "password": "Kunaal"
+    "title": "My first blog"
 }
