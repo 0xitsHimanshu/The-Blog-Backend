@@ -1,2 +1,2 @@
 
-GET  http://localhost:6969/api/blog/latest-blogs
+GET  http://localhost:6969/api/blog/trending-blogs
