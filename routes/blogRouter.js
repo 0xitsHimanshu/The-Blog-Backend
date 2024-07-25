@@ -11,4 +11,4 @@ route.post("/search-blogs", searchBlogs);
 route.post("/search-blogs-count",searchBlogsCount)
 route.post("/create-blog", verifyJWT ,createBlog);
 
-export default route;
+export default route; 

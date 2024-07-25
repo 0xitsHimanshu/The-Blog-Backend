@@ -8,16 +8,6 @@ import { getAuth } from "firebase-admin/auth";
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
 let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
 
-
-export const test = async (req, res) => {
-  try {
-    res.send("Test route is working");
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Internal Server Error");
-  }
-};
-
 // #function to signup
 export const signup = async (req, res) => {
   try {
@@ -120,4 +110,22 @@ export const googleAuth = async (req, res) => {
     console.error(err);
     return res.status(500).json({ error: "Internal Server Error" });
   }
+};
+
+
+// #function to search users
+
+export const searchUsers = async (req, res) => {
+  let {query} = req.body;
+
+  User.find({ "personal_info.username": new RegExp(query,'i')})
+   .limit(50)
+   .select("personal_info.username personal_info.fullname personal_info.profile_img -_id")
+   .then( users => {
+      return res.status(200).json({users})
+   })
+   .catch(err => {
+      return res.status(500).json({"error": err.message})
+   })
+  
 };

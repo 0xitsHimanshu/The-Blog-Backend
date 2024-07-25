@@ -1,6 +1,6 @@
-POST http://localhost:6969/api/blog/search-blogs
+POST http://localhost:6969/api/users/search-users
 Content-Type: application/json
 
 {
-    "tag": ""
+    "query": "k"
 }
