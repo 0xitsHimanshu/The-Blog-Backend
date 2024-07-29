@@ -92,13 +92,15 @@ export const getTrendingBlog = (req,res) => {
 };
 
 export const searchBlogs = (req, res) => {
-    let {tag,query ,page} = req.body;
+    let {tag,query,author,page} = req.body;
     let findQuery;
 
     if(tag){
         findQuery = {tags: tag, draft: false};
     } else if( query){
         findQuery = {draft: false, title: new RegExp(query,'i')};
+    } else if(author){
+        findQuery = {draft: false,author}; 
     }
 
     let maxLimit = 2;
@@ -118,7 +120,7 @@ export const searchBlogs = (req, res) => {
 };
 
 export const searchBlogsCount = (req, res) => {
-    let {tag, query} = req.body;
+    let {tag, query, author} = req.body;
 
     let findQuery;
 
@@ -126,6 +128,8 @@ export const searchBlogsCount = (req, res) => {
         findQuery = {tags: tag, draft: false};
     } else if( query){
         findQuery = {draft: false, title: new RegExp(query,'i')};
+    } else if(author){
+        findQuery = {draft: false,author}; 
     }
 
     Blog.countDocuments(findQuery)
