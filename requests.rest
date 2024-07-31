@@ -1,6 +1,6 @@
-POST http://localhost:6969/api/users/get-profile
+POST http://localhost:6969/api/blog/get-blog
 Content-Type: application/json
 
 {
-    "username": "kyadav.9643"
+    "blog_id": "World-Wide-Crash-of-windows-stIb8Bt4ERdnr1t1-13OT"
 }

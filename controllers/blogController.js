@@ -141,3 +141,18 @@ export const searchBlogsCount = (req, res) => {
         return res.status(500).json({"error": err.message})
      })
 }
+
+export const getBlog = (req, res) => {
+    let {blog_id} = req.body;
+    let increamentVal = 1;
+
+    Blog.findOneAndUpdate({blog_id}, { $inc : {"activity.total_reads": increamentVal}})
+     .populate("author", "personal_info.fullname personal_info.username personal_info.profile_img")
+     .select("title des banner content tags activity publishedAt blog_id")
+     .then(blog => {
+        return  res.status(200).json({blog});
+     })
+     .catch(err => {
+        return res.status(500).json({"error": err.message})
+     });
+};
