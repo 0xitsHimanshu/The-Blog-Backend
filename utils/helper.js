@@ -14,9 +14,7 @@ export const generateUsername = async (email) => {
   return username;
 };
 
-
 // function to verify JWT for the authentication of user 
-
 export const verifyJWT = async (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];

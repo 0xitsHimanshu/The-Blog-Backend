@@ -50,7 +50,6 @@ export const signup = async (req, res) => {
   }
 };
 
-
 // #function to signin
 export const signin = async (req, res) => {
     try{
@@ -111,7 +110,6 @@ export const googleAuth = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 
 // #function to search users
 
