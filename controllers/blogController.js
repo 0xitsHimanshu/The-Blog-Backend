@@ -143,13 +143,25 @@ export const searchBlogsCount = (req, res) => {
 }
 
 export const getBlog = (req, res) => {
-    let {blog_id} = req.body;
-    let increamentVal = 1;
+    let {blog_id, draft, mode} = req.body;
+    let increamentVal = mode != 'edit' ? 1 : 0;
+
 
     Blog.findOneAndUpdate({blog_id}, { $inc : {"activity.total_reads": increamentVal}})
      .populate("author", "personal_info.fullname personal_info.username personal_info.profile_img")
      .select("title des banner content tags activity publishedAt blog_id")
      .then(blog => {
+
+        User.findOneAndUpdate({"personal_info.username": blog.author.personal_info.username}, { $inc: {"activity.total_reads": increamentVal}})
+        .catch(err => {
+            console.log(err.message)
+            return res.status(500).json({"error": err.message})
+        })
+
+        if(blog.draft && !draft) {
+            return res.status(500).json({error: 'You cannot access draft blogs.'})
+        }
+
         return  res.status(200).json({blog});
      })
      .catch(err => {
