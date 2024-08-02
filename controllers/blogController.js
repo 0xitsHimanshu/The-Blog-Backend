@@ -1,11 +1,13 @@
 import { nanoid } from "nanoid";
 import { Blog } from "../Schema/Blog.js";
 import { User } from "../Schema/User.js";
+import { Notification } from "../Schema/Notification.js";
+
 
 export const createBlog = async (req, res) => {
 
    let authorID = req.user.id;
-   let { title, banner, content, tags, des, draft } = req.body;
+   let { title, banner, content, tags, des, draft, id } = req.body;
 
    if(!title.length)
         return res.status(403).json({"error": "You must provide a title"})
@@ -23,27 +25,37 @@ export const createBlog = async (req, res) => {
 
     tags = tags.map(tag => tag.toLowerCase());
 
-    let blog_id = title.replace(/[^a-zA-Z0-9]/g," ").replace(/\s+/g, "-").trim() + nanoid();
+    let blog_id = id ||  title.replace(/[^a-zA-Z0-9]/g," ").replace(/\s+/g, "-").trim() + nanoid();
 
-    let blog = new Blog({
-        title, des, banner, content, tags, author: authorID, blog_id, draft: Boolean(draft)
-    })
-
-    try {
-        // Save the blog
-        await blog.save();
+    if(id){
+        Blog.findOneAndUpdate({blog_id}, {title, des, banner, content, tags, draft:draft ? draft: false})
+         .then(()=> {
+            return res.status(200).json({id: blog_id})
+         }).catch(err => {
+            return res.status(500).json({error: err.message})
+         })
         
-        let incrementVal = draft ? 0 : 1;
-
-        // Update the user's total posts and add the blog to the user's blogs array
-        await User.findOneAndUpdate(
-            { _id: authorID },
-            { $inc: { "account_info.total_posts": incrementVal }, $push: { "blogs": blog._id } }
-        );
-
-        return res.status(200).json({ id: blog.blog_id });
-    } catch (err) {
-        return res.status(500).json({ "error": err.message });e
+    } else {
+        let blog = new Blog({
+            title, des, banner, content, tags, author: authorID, blog_id, draft: Boolean(draft)
+        })
+    
+        try {
+            // Save the blog
+            await blog.save();
+            
+            let incrementVal = draft ? 0 : 1;
+    
+            // Update the user's total posts and add the blog to the user's blogs array
+            await User.findOneAndUpdate(
+                { _id: authorID },
+                { $inc: { "account_info.total_posts": incrementVal }, $push: { "blogs": blog._id } }
+            );
+    
+            return res.status(200).json({ id: blog.blog_id });
+        } catch (err) {
+            return res.status(500).json({ "error": err.message });e
+        }
     }
 };
 
@@ -168,3 +180,50 @@ export const getBlog = (req, res) => {
         return res.status(500).json({"error": err.message})
      });
 };
+
+export const likeBlog = (req, res) => {
+    let user_id = req.user.id;
+    let { _id, islikedByUser } = req.body;
+    let incrementVal = !islikedByUser ? 1 : -1;
+
+    Blog.findOneAndUpdate({ _id }, { $inc: { "activity.total_likes": incrementVal }})
+        .then((blog) => {
+            if (!islikedByUser) {
+                let like = new Notification({
+                    type: "like",
+                    blog: _id,
+                    notification_for: blog.author,
+                    user: user_id
+                });
+
+                like.save()
+                    .then((notification) => {
+                        return res.status(200).json({ liked_by_user: true });
+                    })
+            } else {
+                Notification.findOneAndDelete({user: user_id, type: "like", blog: _id})
+                 .then( data => {
+                     return res.status(200).json({ liked_by_user: false });
+                 })
+                 .catch( err => {
+                    return res.status(500).json({error: err.message})
+                 })
+            }
+        })
+        .catch((err) => {
+            return res.status(500).json({ error: "Error updating blog", details: err.message });
+        });
+};
+
+export const islikedByUser = (req, res) => { 
+    let user_id = req.user.id;
+    let { _id } = req.body;
+
+    Notification.exists({ user: user_id, type: "like", blog: _id })
+        .then((result) => {
+            return res.status(200).json({ result});
+        })
+        .catch((err) => {
+            return res.status(500).json({  error: err.message });
+        });
+}
