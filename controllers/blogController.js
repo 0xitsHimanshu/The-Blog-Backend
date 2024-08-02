@@ -92,18 +92,18 @@ export const getTrendingBlog = (req,res) => {
 };
 
 export const searchBlogs = (req, res) => {
-    let {tag,query,author,page} = req.body;
+    let {tag,query,author,page, limit, eleminate_blog} = req.body;
     let findQuery;
 
     if(tag){
-        findQuery = {tags: tag, draft: false};
+        findQuery = {tags: tag, draft: false,  blog_id: { $ne : eleminate_blog}};
     } else if( query){
         findQuery = {draft: false, title: new RegExp(query,'i')};
     } else if(author){
         findQuery = {draft: false,author}; 
     }
 
-    let maxLimit = 2;
+    let maxLimit = limit ? limit : 2;
 
     Blog.find(findQuery)
     .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
