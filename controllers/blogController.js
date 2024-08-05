@@ -260,3 +260,24 @@ export const AddComment = (req, res) => {
         return res.status(200).json({comment, commentedAt, children, _id: commentFile._id})
     })
 }
+
+export const getComments = (req, res) => {
+    let {blog_id, skip } = req.body;
+    let maxLimit = 5;
+
+    Comment.find({blog_id, isReplyl:false})
+     .populate("commented_by", "personal_info.username personal_info.fullname personal_info.profile_img")
+     .skip(skip)
+     .limit(maxLimit)
+     .sort({
+        commentedAt: -1
+     })
+     .then( comment => {
+        return res.status(200).json({comment})
+     })
+     .catcth(err => {
+        console.log(err.message);
+        return res.status(500).json({error: err.message})
+     })
+
+}
