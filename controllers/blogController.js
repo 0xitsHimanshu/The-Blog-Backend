@@ -243,8 +243,10 @@ export const AddComment = (req, res) => {
     commentObj.save().then((commentFile)=> {
         let {comment, commentedAt, children } = commentFile;
 
-        Blog.findOneAndUpdate({_id}, {$push: {"comments": commentFile._id}, $inc: {"activity.total_comments": 1},"activity.total_parent_comments": 1 })
-         .then(() => {console.log("New comment added...")})
+        Blog.findOneAndUpdate({_id}, {$push: {"comments": commentFile._id}, $inc: {"activity.total_comments": 1, "activity.total_parent_comments": 1} })
+         .then(() => {
+
+         })
 
         let notificationObj = new Notification({
             type: "comment",
@@ -255,7 +257,7 @@ export const AddComment = (req, res) => {
         })
 
         notificationObj.save().then(() => {
-            console.log("Notification added...")
+            
         })
         return res.status(200).json({comment, commentedAt, children, _id: commentFile._id})
     })
