@@ -329,7 +329,7 @@ export const getReplies = (req, res) => {
 }
 
 export const delete_Comment = (req, res) => {
-    const {user_id } = req.body.user;
+    const user_id = req.user.id;
     const { _id } = req.body;
 
     Comment.findOne({ _id })

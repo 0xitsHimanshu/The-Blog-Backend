@@ -11,11 +11,11 @@ route.post("/search-blogs", searchBlogs);
 route.post("/search-blogs-count",searchBlogsCount)
 route.post("/get-blog", getBlog);
 route.post("/like-blog", verifyJWT, likeBlog);
-route.post("/get-comment", getComments);
-route.post("/get-replies", getReplies)
 route.post("/isliked-by-user", verifyJWT, islikedByUser);
 route.post("/add-comment", verifyJWT, AddComment);
+route.post("/get-comment", getComments);
 route.post("/delete-comment", verifyJWT, delete_Comment);
+route.post("/get-replies", getReplies)
 route.post("/create-blog", verifyJWT ,createBlog);
 
 export default route; 
