@@ -351,7 +351,7 @@ const deleteComment = (_id) => {
      .then( comment => {
         if(comment.parent){
             Comment.findOneAndUpdate({_id: comment.parent}, {$pull: {children: _id}})
-             .then(data => conosle.log('comment deleted from parent'))
+             .then(data => console.log('comment deleted from parent'))
              .catch(err => console.log(err.message));
         }
 
