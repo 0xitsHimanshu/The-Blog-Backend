@@ -6,6 +6,7 @@ const port = process.env.PORT ||  3000;
 //intialize database connection
 dbConnection();
 
+console.clear()
 //listening to the server
 app.listen(port, () => {
     console.log("****Server is running****");
