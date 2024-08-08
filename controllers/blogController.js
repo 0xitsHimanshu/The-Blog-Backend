@@ -334,8 +334,9 @@ export const delete_Comment = (req, res) => {
 
     Comment.findOne({ _id })
      .then((comment) => {
-        if(comment.commented_by == user_id || comment.blog_author == user_id) {
+        if( user_id == comment.commented_by || user_id == comment.blog_author  ) {
             deleteComment(_id);
+            return res.status(200).json({ message: "Comment deleted successfully!" })
         } else {
             return res.status(403).json({ error: "You can not delete this comment!" })
         }
@@ -345,7 +346,6 @@ export const delete_Comment = (req, res) => {
 }
 
 //helper function for the deleteComment deleteComment
-
 const deleteComment = (_id) => {
     Comment.findOneAndDelete({_id})
      .then( comment => {
@@ -355,8 +355,8 @@ const deleteComment = (_id) => {
              .catch(err => console.log(err.message));
         }
 
-        Notification.findOneAndDelete({ comment: _id }).then( notification => console.log('comment notification deleted'))
-        Notification.findOneAndDelete({ reply: _id }).then( notification => console.log('reply notification deleted'))
+        Notification.findOneAndDelete({ comment: _id }).then( notification => { })
+        Notification.findOneAndDelete({ reply: _id }).then( notification => { })
 
         Blog.findOneAndUpdate({ _id: comment.blog_id }, {$pull: {comments: _id}, $inc: {"activity.total_comments": -1, "activity.total_parent_comments": comment.parent ? 0 : -1}})
          .then(blog => {
