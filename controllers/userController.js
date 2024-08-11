@@ -141,3 +141,61 @@ export const getProfile = (req, res) => {
    })
 
 }
+
+export const changePassword = (req, res) => {
+  
+  let { currentPassword, newPassword } = req.body;
+
+  // Check if the passwords meet the required criteria
+  if (!passwordRegex.test(currentPassword) || !passwordRegex.test(newPassword)) {
+    return res.status(403).json({
+      error: "Password should be at least 6 characters long and should contain at least 1 uppercase letter, 1 lowercase letter, and 1 number",
+    });
+  }
+
+  if(currentPassword === newPassword) {
+    return res.status(403).json({error: "New password cannot be the same as the current password"});
+  }
+
+  // Find the user by their ID
+  User.findOne({ _id: req.user.id })
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Check if the user is using Google authentication
+      if (user.google_auth) {
+        return res.status(403).json({ error: "Cannot change password. Please use Google authentication." });
+      }
+
+      // Compare the current password with the stored password
+      bcrypt.compare(currentPassword, user.personal_info.password, (err, result) => {
+        if (err) {
+          return res.status(500).json({ error: "Something went wrong. Please try again." });
+        }
+        if (!result) {
+          return res.status(403).json({ error: "Invalid current password" });
+        }
+
+        // Hash the new password
+        bcrypt.hash(newPassword, 12, (err, hashedPassword) => {
+          if (err) {
+            return res.status(500).json({ error: "Error hashing the new password." });
+          }
+
+          // Update the user's password in the database
+          User.findOneAndUpdate({ _id: req.user.id }, { "personal_info.password": hashedPassword }, { new: true })
+            .then(() => {
+              return res.status(200).json({ message: "Password changed successfully" });
+            })
+            .catch((err) => {
+              return res.status(500).json({ error: err.message });
+            });
+        });
+      });
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: err.message });
+    });
+};

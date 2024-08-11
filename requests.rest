@@ -1,6 +1,7 @@
-POST http://localhost:6969/api/blog/get-blog
+
+POST http://localhost:6969/api/users/get-profile
 Content-Type: application/json
 
 {
-    "blog_id": "World-Wide-Crash-of-windows-stIb8Bt4ERdnr1t1-13OT"
-}
+    "username": "miketheross69"
+} 
