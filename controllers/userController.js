@@ -142,6 +142,69 @@ export const getProfile = (req, res) => {
 
 }
 
+
+export const changeProfileImg = (req, res) => {
+  const {url} = req.body;
+  
+  User.findOneAndUpdate({ _id: req.user.id }, { "personal_info.profile_img": url })
+   .then(()=> {
+      return res.status(200).json({profile_img: url});
+   })
+   .catch (err => {
+      return res.status(500).json({error: err.message});
+   })
+
+}
+
+export const editProfile = (req, res) => {
+  let {username, bio, social_links} = req.body;
+  const bioLimit = 150;
+
+  if(username.length < 3) {
+    return res.status(403).json({error: "Username should be atleast 3 characters long"});
+  }
+  if(bio.length > bioLimit) {
+    return res.status(403).json({error: `Bio should be less than ${bioLimit} characters long`});
+  }
+
+  let socialLinksArr = Object.keys(social_links);
+
+  try {
+
+    for(let i=0; i<socialLinksArr.length; i++){
+      if(social_links[socialLinksArr[i]].length){
+        let hostname = new URL(social_links[socialLinksArr[i]]).hostname;
+
+        if(!hostname.includes(`${socialLinksArr[i]}.com`) && socialLinksArr[i] !== "website") {
+          return res.status(500).json({error: `${socialLinksArr[i]} link is invalid. You must enter a full URL`});
+        }
+      }
+    }
+    
+  } catch (error) {
+    return res.status(500).json({error: "You must provide a valid URL for the social links with http(s) included"});
+  }
+
+  let UpdateObj = {
+    "personal_info.username": username,
+    "personal_info.bio": bio,
+     social_links
+  }
+
+  User.findOneAndUpdate({_id: req.user.id}, UpdateObj, {
+    runValidators: true
+  }).then(()=> {
+    return res.status(200).json({username});
+  })
+  .catch(err => {
+    if(err.code === 11000) {
+      return res.status(403).json({error: "Username is already taken"});
+    }
+    return res.status(500).json({error: err.message});
+  })
+
+}
+
 export const changePassword = (req, res) => {
   
   let { currentPassword, newPassword } = req.body;
