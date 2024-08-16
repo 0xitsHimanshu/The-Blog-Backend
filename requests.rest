@@ -1,7 +1,0 @@
-
-POST http://localhost:6969/api/users/get-profile
-Content-Type: application/json
-
-{
-    "username": "miketheross69"
-} 

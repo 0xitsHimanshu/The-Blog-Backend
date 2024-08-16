@@ -19,7 +19,7 @@ export const verifyJWT = async (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
   if (!token) {
-    console.log("No token");
+    console.log("No token - verifyJWT");
     return res.status(401).json({ message: "No access token" });
   }
 
