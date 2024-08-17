@@ -63,8 +63,8 @@ export const all_notifications_count = (req, res) => {
     }
 
     Notification.countDocuments(findQuery)
-    .then(count => {
-        return res.status(200).json({count})
+    .then(totalDocs => {
+        return res.status(200).json({totalDocs})
     })
     .catch(err => {
         return res.status(500).json({message: err.message})
