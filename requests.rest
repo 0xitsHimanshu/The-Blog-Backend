@@ -1,0 +1,8 @@
+POST http://localhost:6969/api/blog/user-written-blogs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2N2Q4NjBlMGQzYWMxMDliOTQzMTc0NiIsImlhdCI6MTcyNDIzNTcxNH0.CGbUis9Y1YP_5ySnQBDugfD9QUdtak6uY363iQlb8Hg
+Content-Type: application/json
+
+{
+    "page": 1,
+    "draft": false
+}
