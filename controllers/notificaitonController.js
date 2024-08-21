@@ -45,6 +45,14 @@ export const get_notifications = (req, res) => {
     .sort({createdAt: -1})
     .select("createdAt type seen reply")
     .then((notifications) => {
+
+        Notification.updateMany(findQuery, {seen: true})
+         .skip(skipDocs)
+         .limit(maxLimit)
+         .then(() => {
+            // Here's the logic for marking the notifications 
+         })
+
         res.status(200).json({notifications})
     })
     .catch(err => {

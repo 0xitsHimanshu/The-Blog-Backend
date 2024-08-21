@@ -266,6 +266,9 @@ export const AddComment = async (req, res) => {
 
             await Comment.findOneAndUpdate({ _id: replying_to }, { $push: { "children": commentFile._id } })
                 .then(replyingToCommentDoc => {
+                    if (!replyingToCommentDoc) {
+                        return res.status(404).json({ error: "Replying comment not found!" });
+                    }
                     notificationObj.notification_for = replyingToCommentDoc.commented_by;
                 })
 
@@ -339,6 +342,7 @@ export const delete_Comment = (req, res) => {
 
     Comment.findOne({ _id })
      .then((comment) => {
+
         if( user_id == comment.commented_by || user_id == comment.blog_author  ) {
             deleteComment(_id);
             return res.status(200).json({ message: "Comment deleted successfully!" })
@@ -353,25 +357,49 @@ export const delete_Comment = (req, res) => {
 //helper function for the deleteComment deleteComment
 const deleteComment = (_id) => {
     Comment.findOneAndDelete({_id})
-     .then( comment => {
-        if(comment.parent){
-            Comment.findOneAndUpdate({_id: comment.parent}, {$pull: {children: _id}})
-             .then(data => console.log('comment deleted from parent'))
-             .catch(err => console.log(err.message));
-        }
+        .then(comment => {
+            if (!comment) return;  // If the comment is not found, exit early
 
-        Notification.findOneAndDelete({ comment: _id }).then( notification => { })
-        Notification.findOneAndDelete({ reply: _id }).then( notification => { })
-
-        Blog.findOneAndUpdate({ _id: comment.blog_id }, {$pull: {comments: _id}, $inc: {"activity.total_comments": -1, "activity.total_parent_comments": comment.parent ? 0 : -1}})
-         .then(blog => {
-            if(comment.children.length){
-                comment.children.map(replies => {
-                    deleteComment(replies)
-                })
+            // Remove this comment from the parent's children array
+            if (comment.parent) {
+                Comment.findOneAndUpdate(
+                    { _id: comment.parent },
+                    { $pull: { children: _id } }
+                )
+                .then(data => console.log('Comment deleted from parent'))
+                .catch(err => console.log(err.message));
             }
-         })
 
-     })
-     .catch(err => console.log(err.message))
-}
+            // Remove the associated notification for this comment
+            Notification.findOneAndDelete({ comment: _id })
+                .then(notification => { /* Handle the result if needed */ })
+                .catch(err => console.log(err.message));
+
+            // Unset the reply field in the associated notification if this comment is a reply
+            Notification.findOneAndUpdate( { reply: _id}, { $unset: { reply: 1}})
+            .then(notification => { /* Handle the result if needed */ })
+            .catch(err => console.log(err.message));
+
+            // Update the blog's comment counts and remove this comment from the blog's comments array
+            Blog.findOneAndUpdate(
+                { _id: comment.blog_id },
+                {
+                    $pull: { comments: _id },
+                    $inc: {
+                        "activity.total_comments": -1,
+                        "activity.total_parent_comments": comment.parent ? 0 : -1
+                    }
+                }
+            )
+            .then(blog => {
+                // If the comment has children (replies), delete them as well
+                if (comment.children.length) {
+                    comment.children.forEach(replyId => {
+                        deleteComment(replyId);
+                    });
+                }
+            })
+            .catch(err => console.log(err.message));
+        })
+        .catch(err => console.log(err.message));
+};
