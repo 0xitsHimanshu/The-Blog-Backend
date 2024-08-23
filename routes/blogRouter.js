@@ -1,5 +1,5 @@
 import express from "express";
-import { AddComment, createBlog, delete_Comment, getAllLatestBlogCount, getBlog, getComments, getLatestBlog, getReplies, getTrendingBlog, islikedByUser, likeBlog, searchBlogs, searchBlogsCount, userWrittenBlogs, userWrittenBlogsCount } from "../controllers/blogController.js";
+import { AddComment, createBlog, delete_Comment, deleteBlog, getAllLatestBlogCount, getBlog, getComments, getLatestBlog, getReplies, getTrendingBlog, islikedByUser, likeBlog, searchBlogs, searchBlogsCount, userWrittenBlogs, userWrittenBlogsCount } from "../controllers/blogController.js";
 import { verifyJWT } from "../utils/helper.js";
 
 const route = express.Router();
@@ -19,5 +19,6 @@ route.post("/get-replies", getReplies)
 route.post("/create-blog", verifyJWT ,createBlog);
 route.post("/user-written-blogs", verifyJWT, userWrittenBlogs)
 route.post("/user-written-blogs-count", verifyJWT, userWrittenBlogsCount)
+route.post("/delete-blog", verifyJWT , deleteBlog)
 
 export default route; 

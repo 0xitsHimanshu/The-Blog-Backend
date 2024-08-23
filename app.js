@@ -26,7 +26,7 @@ admin.initializeApp({
 app.use("/api/users", userRouter);
 app.use("/api/blog", blogRouter)
 app.use("/api/notification", notificationRouter)
-app.use("/api/aws", awsRouter);
+app.use("/api/aws", awsRouter); 
 
 
 app.get("/", (req, res) => {
