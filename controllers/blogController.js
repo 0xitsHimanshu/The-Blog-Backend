@@ -165,7 +165,7 @@ export const getBlog = (req, res) => {
         .select("title des banner content tags activity publishedAt blog_id")
         .then(blog => {
 
-            User.findOneAndUpdate({ "personal_info.username": blog.author.personal_info.username }, { $inc: { "activity.total_reads": increamentVal } })
+            User.findOneAndUpdate({ "personal_info.username": blog.author.personal_info.username }, { $inc: { "account_info.total_reads": increamentVal } })
                 .catch(err => {
                     console.log(err.message)
                     return res.status(500).json({ "error": err.message })
