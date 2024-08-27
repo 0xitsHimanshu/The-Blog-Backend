@@ -83,7 +83,7 @@ export const googleAuth = async (req, res) => {
     const decodedUser = await getAuth().verifyIdToken(accessToken);
     const { email, name, picture } = decodedUser;
 
-    const user = await User.findOne({ "personal_info.email": email }).select("personal_info.fullname personal_info.username personal_info.profile_img google_auth password");
+    let user = await User.findOne({ "personal_info.email": email }).select("personal_info.fullname personal_info.username personal_info.profile_img google_auth password");
 
     if (user) {
       if (!user.google_auth) {
